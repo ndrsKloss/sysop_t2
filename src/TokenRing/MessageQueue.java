@@ -10,20 +10,21 @@ import java.util.Deque;
  */
 
 public class MessageQueue {
-    /*Implemente uma estrutura de dados para manter uma lista de mensagens em formato string. 
-     * Você pode, por exemplo, usar um ArrayList(). 
-     * Não se esqueça que em uma fila, o primeiro elemente a entrar será o primeiro
-     * a ser removido.
-    */
-    Deque deque = new LinkedList<String>();
+    Deque<String> deque;
 
     
     public MessageQueue(){
+        this.deque = new LinkedList<>();
     
     }
     
     
-    public void AddMessage(String message){
+/*Implemente uma estrutura de dados para manter uma lista de mensagens em formato string.
+     * Você pode, por exemplo, usar um ArrayList().
+     * Não se esqueça que em uma fila, o primeiro elemente a entrar será o primeiro
+     * a ser removido.
+     */
+        public void AddMessage(String message){
         /* Adicione a mensagem no final da fila. Não se esqueça de garantir que apenas uma thread faça isso 
         por vez. */
         
@@ -36,7 +37,4 @@ public class MessageQueue {
         
         return (String) deque.pop();
     }
-    
-
-    
 }
