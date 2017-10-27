@@ -1,7 +1,8 @@
 package TokenRing;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Deque;
+
 
 /* Esta classe deve implementar uma fila de mensagens. Observe que esta fila será
  * acessada por um consumidor (MessageSender) e um produtor (Classe principal, TokenRing).
@@ -14,27 +15,26 @@ public class MessageQueue {
      * Não se esqueça que em uma fila, o primeiro elemente a entrar será o primeiro
      * a ser removido.
     */
-    ArrayList<String> queue = new ArrayList<>();
+    Deque deque = new LinkedList<String>();
+
     
     public MessageQueue(){
     
     }
     
     
-    public void AddMessage(String Message){
+    public void AddMessage(String message){
         /* Adicione a mensagem no final da fila. Não se esqueça de garantir que apenas uma thread faça isso 
         por vez. */
         
-    
+        deque.addLast(message);
     }
     
     public String RemoveMessage(){
-        String msg = "Bob:hello world"; /* Exemplo de mensagem armazenada na fila. */
-        
         /* Retive uma mensagem do inicio da fila. Não se esqueça de garantir que apenas uma thread faça isso 
         por vez.  */
         
-        return msg;
+        return (String) deque.pop();
     }
     
 

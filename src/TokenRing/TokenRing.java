@@ -60,7 +60,7 @@ public class TokenRing {
         Scanner scanner = new Scanner(System.in);
         
         while (true) {
-            // scanner.nextLine();
+            queue.AddMessage(scanner.nextLine());
         }
     }
     
