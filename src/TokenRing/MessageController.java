@@ -52,7 +52,7 @@ public class MessageController implements Runnable{
      */
     public void ReceivedMessage(String msg){
         
-         System.out.println("TOKEN RECEIVED: " + msg);
+         //System.out.println("TOKEN RECEIVED: " + msg);
         
          /* Libera a thread para execução. */
          WaitForMessage.release();
