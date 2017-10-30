@@ -62,27 +62,26 @@ public class MessageController implements Runnable{
      * repasse o ACK para o seu vizinho da direita.
      */
     public void ReceivedMessage(String rawMessage){
-        String replacedString = rawMessage.replaceAll("\\s+","");
         
-        System.out.println("Mensagem recebida: " + replacedString);
+        System.out.println("Mensagem recebida: " + rawMessage);
 
-        if (this.isMessage(replacedString) && this.isForMe()) {
+        if (this.isMessage(rawMessage) && this.isForMe()) {
             System.out.println("É uma mensagem para mim");
             System.out.println(this.originNickname + ": " + this.originMessage);
             System.out.println("Preparando para enviar ACK");
             this.prepareACK();
-        } else if (this.isACK(replacedString) && this.isForMe()) {
+        } else if (this.isACK(rawMessage) && this.isForMe()) {
             System.out.println("É um ACK para mim");
             System.out.println("Preparando para liberar o Token");
             this.prepareToken();
-        } else if (this.isToken(replacedString)) {
+        } else if (this.isToken(rawMessage)) {
             System.out.println("É um Token");
-            System.out.println("Preparando para enviar uma mensagem, caso existe");
+            System.out.println("Preparando para enviar uma mensagem, caso exista");
             this.prepareMessage();
         } else {
             System.out.println("Esta mensagem não é endereçada a mim");
             System.out.println("Repassando a mensagem");
-            this.message = replacedString;
+            this.message = rawMessage;
             this.messageReadyToSend = true;
         }
         
@@ -97,7 +96,7 @@ public class MessageController implements Runnable{
             return false;
         }
         
-        if (messageSplited[0].equals(MessageController.MESSAGE)) {
+        if (!messageSplited[0].equals(MessageController.MESSAGE)) {
             return false;
         } 
 
