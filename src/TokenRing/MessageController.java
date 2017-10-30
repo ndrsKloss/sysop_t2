@@ -61,25 +61,28 @@ public class MessageController implements Runnable{
      *       Se for um ACK e se for para você, sua mensagem foi enviada com sucesso, passe o token para o vizinho da direita, senão, 
      * repasse o ACK para o seu vizinho da direita.
      */
-    public void ReceivedMessage(String message){
+    public void ReceivedMessage(String rawMessage){
+        String replacedString = rawMessage.replaceAll("\\s+","");
         
-        System.out.print("Mensagem recebida: " + message);
-        
-        if (this.isMessage(message) && this.isForMe()) {
-            System.out.print("É uma mensagem para mim");
+        System.out.println("Mensagem recebida: " + replacedString);
+
+        if (this.isMessage(replacedString) && this.isForMe()) {
+            System.out.println("É uma mensagem para mim");
             System.out.println(this.originNickname + ": " + this.originMessage);
             System.out.print("Preparando para enviar ACK");
             this.prepareACK();
-        } else if (this.isACK(message) && this.isForMe()) {
+        } else if (this.isACK(replacedString) && this.isForMe()) {
             System.out.print("É um ACK para mim");
             System.out.print("Preparando para liberar o Token");
             this.prepareToken();
-        } else if (this.isToken(message)) {
+        } else if (this.isToken(replacedString)) {
             System.out.print("É um Token");
             System.out.print("Preparando para enviar uma mensagem, caso existe");
             this.prepareMessage();
         } else {
-            this.message = message;
+            System.out.println("Esta mensagem não é endereçada a mim");
+            System.out.println("Repassando a mensagem");
+            this.message = replacedString;
             this.messageReadyToSend = true;
         }
         
@@ -87,8 +90,8 @@ public class MessageController implements Runnable{
          WaitForMessage.release();
     }
     
-    private Boolean isMessage(String message) {
-        String[] messageSplited = message.split(";");
+    private Boolean isMessage(String m) {
+        String[] messageSplited = m.split(";");
         
         if (messageSplited.length != 2) {
             return false;
@@ -112,8 +115,8 @@ public class MessageController implements Runnable{
         return true;
     }
     
-    private Boolean isACK(String message) {
-        String[] messageSplited = message.split(";");
+    private Boolean isACK(String m) {
+        String[] messageSplited = m.split(";");
         
         if (messageSplited.length != 2) {
             return false;
@@ -128,8 +131,11 @@ public class MessageController implements Runnable{
         return true;
     }
     
-    private Boolean isToken(String message) {
-        return message.equals(MessageController.TOKEN);
+    private Boolean isToken(String m) {
+        if (m.equals(MessageController.TOKEN)) {
+            return true;
+        }
+        return false;
     }
     
     private Boolean isForMe() {
