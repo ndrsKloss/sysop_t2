@@ -17,7 +17,18 @@ public class MessageController implements Runnable{
     private Semaphore WaitForMessage;
     private String nickname;
     private int time_token;
-    private Boolean token;
+    private Boolean initialToken;
+    
+    private static final String TOKEN = "4060";
+    private static final String MESSAGE = "4066";
+    private static final String AKC = "4067";
+    
+    private String originMessage;
+    private String destNickname;
+    private String originNickname;
+    
+    private Boolean messageReadyToSend = false;
+    private String message;
     
     public MessageController(   MessageQueue q, 
                                 String ip_port, 
@@ -34,7 +45,7 @@ public class MessageController implements Runnable{
         
         time_token = t_token;
         
-        token = t;
+        initialToken = t;
         
         nickname = n;
         
@@ -50,12 +61,88 @@ public class MessageController implements Runnable{
      *       Se for um ACK e se for para você, sua mensagem foi enviada com sucesso, passe o token para o vizinho da direita, senão, 
      * repasse o ACK para o seu vizinho da direita.
      */
-    public void ReceivedMessage(String msg){
+    public void ReceivedMessage(String message){
         
-         //System.out.println("TOKEN RECEIVED: " + msg);
+        if (this.isMessage(message) && this.isForMe()) {
+             System.out.println(this.originNickname + ": " + this.originMessage);
+             // Envia ACK para a origem pelo próximo host
+        } else if (this.isACK(message) && this.isForMe()) {
+            // Libera o Token para o próximo host
+        } else if (this.isToken(message)) {
+            // Pega mensagem da fila, segura o Token e envia a mensagem para o próximo host
+        } else {
+            // Libera a mensagem para o próximo host
+        }
         
          /* Libera a thread para execução. */
          WaitForMessage.release();
+    }
+    
+    private Boolean isMessage(String message) {
+        String[] messageSplited = message.split(";");
+        
+        if (messageSplited.length != 2) {
+            return false;
+        }
+        
+        if (messageSplited[0].equals(MessageController.MESSAGE)) {
+            return false;
+        } 
+
+        
+       String[] messageInfo = messageSplited[1].split(":"); 
+        
+        if (messageInfo.length != 3) {
+            return false;
+        }
+        
+        this.destNickname = messageInfo[1];
+        
+        return true;
+    }
+    
+    private Boolean isACK(String message) {
+        String[] messageSplited = message.split(";");
+        
+        if (messageSplited.length != 2) {
+            return false;
+        } 
+        
+        if (!messageSplited[0].equals(MessageController.AKC)) {
+            return false;
+        }
+        
+        this.destNickname = messageSplited[1];
+        this.originMessage = messageSplited[2];
+        this.originNickname = messageSplited[0];
+        
+        return true;
+    }
+    
+    private Boolean isToken(String message) {
+        return message.equals(MessageController.TOKEN);
+    }
+    
+    private Boolean isForMe() {
+        return this.destNickname.equals(this.nickname);
+    }
+    
+    private void prepareMessage() {
+        
+    }
+    
+    private void prepareACK() {
+        
+    }
+    
+    private void prepareToken() {
+        
+    }
+ 
+    private void cleanUpVariables() {
+        this.originMessage = "";
+        this.destNickname = "";
+        this.originNickname = "";
     }
     
     @Override
@@ -84,17 +171,18 @@ public class MessageController implements Runnable{
                 Logger.getLogger(MessageController.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-            if(token == true){
+            if(this.initialToken || this.messageReadyToSend) {
+                this.initialToken = false;
 
                 /* Converte string para array de bytes para envio pelo socket. */
-                String msg = "4060"; /* Lembre-se do protocolo, "4060" é o token! */
-                sendData = msg.getBytes();
+                sendData = this.message.getBytes();
             
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);         
                 
                 /* Realiza envio da mensagem. */
                 try {
                     clientSocket.send(sendPacket);
+                    this.messageReadyToSend = false;
                 } catch (IOException ex) {
                     Logger.getLogger(MessageController.class.getName()).log(Level.SEVERE, null, ex);
                 }
