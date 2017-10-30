@@ -20,6 +20,10 @@ public class MessageQueue {
     
     }
     
+    public Boolean isEmpty() {
+        return this.deque.isEmpty();
+    }
+    
 /*Implemente uma estrutura de dados para manter uma lista de mensagens em formato string.
      * Você pode, por exemplo, usar um ArrayList().
      * Não se esqueça que em uma fila, o primeiro elemente a entrar será o primeiro

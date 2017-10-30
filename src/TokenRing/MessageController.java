@@ -63,15 +63,18 @@ public class MessageController implements Runnable{
      */
     public void ReceivedMessage(String message){
         
+        System.out.print(message);
+        
         if (this.isMessage(message) && this.isForMe()) {
              System.out.println(this.originNickname + ": " + this.originMessage);
-             // Envia ACK para a origem pelo próximo host
+             this.prepareACK();
         } else if (this.isACK(message) && this.isForMe()) {
-            // Libera o Token para o próximo host
+            this.prepareToken();
         } else if (this.isToken(message)) {
-            // Pega mensagem da fila, segura o Token e envia a mensagem para o próximo host
+            this.prepareMessage();
         } else {
-            // Libera a mensagem para o próximo host
+            this.message = message;
+            this.messageReadyToSend = true;
         }
         
          /* Libera a thread para execução. */
@@ -96,7 +99,9 @@ public class MessageController implements Runnable{
             return false;
         }
         
+        this.originNickname = messageInfo[0];
         this.destNickname = messageInfo[1];
+        this.originMessage = messageInfo[2];
         
         return true;
     }
@@ -113,8 +118,6 @@ public class MessageController implements Runnable{
         }
         
         this.destNickname = messageSplited[1];
-        this.originMessage = messageSplited[2];
-        this.originNickname = messageSplited[0];
         
         return true;
     }
@@ -128,15 +131,23 @@ public class MessageController implements Runnable{
     }
     
     private void prepareMessage() {
+        if (this.queue.isEmpty()) {
+            this.prepareToken();
+        } else {
+            this.message = this.queue.RemoveMessage();
+        }
         
+        this.messageReadyToSend = true;
     }
     
     private void prepareACK() {
-        
+        this.message = MessageController.AKC + ";" + this.originNickname;
+        this.messageReadyToSend = true;
     }
     
     private void prepareToken() {
-        
+        this.message = MessageController.TOKEN;
+        this.messageReadyToSend = true;
     }
  
     private void cleanUpVariables() {
@@ -172,8 +183,11 @@ public class MessageController implements Runnable{
             }
             
             if(this.initialToken || this.messageReadyToSend) {
-                this.initialToken = false;
-
+                if (this.initialToken) {
+                    this.message = MessageController.TOKEN;
+                    this.initialToken = false;
+                }
+                
                 /* Converte string para array de bytes para envio pelo socket. */
                 sendData = this.message.getBytes();
             
