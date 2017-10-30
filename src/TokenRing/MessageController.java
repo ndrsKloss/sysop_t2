@@ -63,14 +63,20 @@ public class MessageController implements Runnable{
      */
     public void ReceivedMessage(String message){
         
-        System.out.print(message);
+        System.out.print("Mensagem recebida: " + message);
         
         if (this.isMessage(message) && this.isForMe()) {
-             System.out.println(this.originNickname + ": " + this.originMessage);
-             this.prepareACK();
+            System.out.print("É uma mensagem para mim");
+            System.out.println(this.originNickname + ": " + this.originMessage);
+            System.out.print("Preparando para enviar ACK");
+            this.prepareACK();
         } else if (this.isACK(message) && this.isForMe()) {
+            System.out.print("É um ACK para mim");
+            System.out.print("Preparando para liberar o Token");
             this.prepareToken();
         } else if (this.isToken(message)) {
+            System.out.print("É um Token");
+            System.out.print("Preparando para enviar uma mensagem, caso existe");
             this.prepareMessage();
         } else {
             this.message = message;
@@ -195,7 +201,9 @@ public class MessageController implements Runnable{
                 
                 /* Realiza envio da mensagem. */
                 try {
+                    System.out.println("Enviando mensagem: " + this.message);
                     clientSocket.send(sendPacket);
+                    System.out.println("Mensagem enviada");
                     this.messageReadyToSend = false;
                 } catch (IOException ex) {
                     Logger.getLogger(MessageController.class.getName()).log(Level.SEVERE, null, ex);
