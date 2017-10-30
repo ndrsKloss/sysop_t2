@@ -69,15 +69,15 @@ public class MessageController implements Runnable{
         if (this.isMessage(replacedString) && this.isForMe()) {
             System.out.println("É uma mensagem para mim");
             System.out.println(this.originNickname + ": " + this.originMessage);
-            System.out.print("Preparando para enviar ACK");
+            System.out.println("Preparando para enviar ACK");
             this.prepareACK();
         } else if (this.isACK(replacedString) && this.isForMe()) {
-            System.out.print("É um ACK para mim");
-            System.out.print("Preparando para liberar o Token");
+            System.out.println("É um ACK para mim");
+            System.out.println("Preparando para liberar o Token");
             this.prepareToken();
         } else if (this.isToken(replacedString)) {
-            System.out.print("É um Token");
-            System.out.print("Preparando para enviar uma mensagem, caso existe");
+            System.out.println("É um Token");
+            System.out.println("Preparando para enviar uma mensagem, caso existe");
             this.prepareMessage();
         } else {
             System.out.println("Esta mensagem não é endereçada a mim");
@@ -132,10 +132,7 @@ public class MessageController implements Runnable{
     }
     
     private Boolean isToken(String m) {
-        if (m.equals(MessageController.TOKEN)) {
-            return true;
-        }
-        return false;
+        return m.equals(MessageController.TOKEN);
     }
     
     private Boolean isForMe() {

@@ -54,7 +54,9 @@ public class MessageReceiver implements Runnable{
             /* Converte o conteúdo do datagrama em string. 
              * Lembre-se, isso apenas funciona porque sabemos que a mensagem recebida tem formato string. 
              */
-            String msg = new String( receivePacket.getData());
+            
+            //String msg = new String( receivePacket.getData());
+            String msg = getRidOfAnnoyingChar(receivePacket);
             
             /* Neste ponto você possui uma mensagem do seu vizinho da esquerda.
              * Passe a mensagem para a classe MessageController, ela deverá decidir
@@ -64,4 +66,17 @@ public class MessageReceiver implements Runnable{
         }
     }
     
+    public String getRidOfAnnoyingChar(DatagramPacket packet){
+        String result = new String(packet.getData());
+        char[] annoyingchar = new char[1];
+        char[] charresult = result.toCharArray();
+        result = "";
+        for(int i=0;i<charresult.length;i++){
+            if(charresult[i]==annoyingchar[0]){
+                break;
+            }
+            result+=charresult[i];
+        }
+        return result;
+    }
 }
