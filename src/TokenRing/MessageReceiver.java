@@ -36,9 +36,10 @@ public class MessageReceiver implements Runnable{
             return;
         }
         
-        byte[] receiveData = new byte[1024];
+        
         
         while(true){
+            byte[] receiveData = new byte[1024];
             
             /* Cria um DatagramPacket */
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
