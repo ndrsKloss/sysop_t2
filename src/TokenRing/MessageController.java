@@ -144,7 +144,8 @@ public class MessageController implements Runnable{
             System.out.println("Preparando para liberar o Token");
             this.prepareToken();
         } else {
-            this.message = this.queue.RemoveMessage();
+            this.message = MessageController.MESSAGE + ";" + 
+                    this.nickname + ":" + this.queue.RemoveMessage();
         }
         this.messageReadyToSend = true;
     }
