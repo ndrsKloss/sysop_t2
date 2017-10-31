@@ -140,11 +140,12 @@ public class MessageController implements Runnable{
     
     private void prepareMessage() {
         if (this.queue.isEmpty()) {
+            System.out.println("Fila de mensagens vazia");
+            System.out.println("Preparando para liberar o Token");
             this.prepareToken();
         } else {
             this.message = this.queue.RemoveMessage();
         }
-        
         this.messageReadyToSend = true;
     }
     
@@ -154,14 +155,17 @@ public class MessageController implements Runnable{
     }
     
     private void prepareToken() {
+        this.message = "";
         this.message = MessageController.TOKEN;
+
         this.messageReadyToSend = true;
     }
  
     private void cleanUpVariables() {
-        this.originMessage = "";
-        this.destNickname = "";
-        this.originNickname = "";
+        this.message = new String();
+        this.originMessage = new String();
+        this.destNickname = new String();
+        this.originNickname = new String();
     }
     
     @Override
@@ -207,6 +211,7 @@ public class MessageController implements Runnable{
                     clientSocket.send(sendPacket);
                     System.out.println("Mensagem enviada");
                     this.messageReadyToSend = false;
+                    this.cleanUpVariables();
                 } catch (IOException ex) {
                     Logger.getLogger(MessageController.class.getName()).log(Level.SEVERE, null, ex);
                 }

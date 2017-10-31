@@ -49,7 +49,7 @@ public class MessageQueue {
         
         try {
             lock.acquire();
-            message = deque.pop();
+            message = deque.removeFirst();
         } catch (InterruptedException ex) {
             Logger.getLogger(MessageQueue.class.getName()).log(Level.SEVERE, null, ex);
         }
