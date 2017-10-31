@@ -155,7 +155,7 @@ public class MessageController implements Runnable{
     }
     
     private void prepareToken() {
-        this.message = "";
+        this.message = new String();
         this.message = MessageController.TOKEN;
 
         this.messageReadyToSend = true;
